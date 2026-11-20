@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClaimBack - Appeal your rejected health-insurance claim</title>
+<meta name="description" content="Upload a rejected health-insurance claim letter. ClaimBack explains why, checks it against official rules and drafts your appeal for human review.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="ClaimBack home">
+      <span class="logo" aria-hidden="true"><i style="background:#4285F4"></i><i style="background:#EA4335"></i><i style="background:#FBBC04"></i><i style="background:#34A853"></i></span>
+      ClaimBack
+    </a>
+    <div class="top-right">
+      <span id="engine" class="badge">checking...</span>
+      <a class="link" href="/reviewer" target="_blank" rel="noopener">Reviewer console</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Claim rejected? Understand why, then appeal with confidence.</h1>
+    <p>Upload or paste your health-insurance rejection letter. ClaimBack explains the reason in plain words, checks it against official IRDAI and Insurance Ombudsman rules, and drafts your appeal for a human reviewer to approve.</p>
+  </section>
+
+  <section class="card" id="input-card">
+    <div class="card-head">
+      <h2>Your rejection letter</h2>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" class="chip on" data-lang="en">English</button>
+        <button type="button" class="chip" data-lang="hi">हिन्दी</button>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab on" data-tab="paste" role="tab">Paste text</button>
+      <button class="tab" data-tab="file" role="tab">Upload photo / PDF</button>
+      <button class="tab" data-tab="demo" role="tab">Try a demo case</button>
+    </div>
+
+    <div class="pane" id="pane-paste">
+      <label class="sr" for="letter">Letter text</label>
+      <textarea id="letter" rows="8" placeholder="Paste the text of the rejection letter here..."></textarea>
+      <p class="hint">Phone numbers, emails, ID, policy and claim numbers are hidden automatically before analysis. Names and addresses are not, so remove them if you prefer.</p>
+    </div>
+
+    <div class="pane" id="pane-file" hidden>
+      <label class="drop" id="drop" for="file">
+        <span class="drop-t">Drop a photo or PDF of the letter here, or tap to choose</span>
+        <span class="drop-s" id="file-name">PNG, JPG, WEBP or PDF, up to 8 MB</span>
+      </label>
+      <input id="file" type="file" accept="image/png,image/jpeg,image/webp,application/pdf" hidden>
+      <p class="hint warn" id="file-warn" hidden></p>
+      <p class="hint">Photos cannot be redacted automatically. Use a real letter only if you are comfortable, and cover personal details first.</p>
+    </div>
+
+    <div class="pane" id="pane-demo" hidden>
+      <p class="hint">Synthetic letters (fake insurer and names) written to show each kind of rejection.</p>
+      <div id="demo-list" class="demo-list"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="go" type="button">Analyse my letter</button>
+      <span class="hint" id="err" role="alert"></span>
+    </div>
+
+    <ol class="steps" id="steps" hidden>
+      <li data-s="0">Reading your letter</li>
+      <li data-s="1">Hiding personal details</li>
+      <li data-s="2">Finding the rejection reason</li>
+      <li data-s="3">Matching official rules</li>
+    </ol>
+  </section>
+
+  <div id="result" hidden></div>
+</main>
+
+<footer class="foot wrap">
+  <p><strong>Guidance, not legal advice.</strong> ClaimBack cannot guarantee any outcome. A trained human reviewer checks every draft before you can use it. Rules shown with a "Verified" badge were checked against official pages on the date shown; others are practical tips or need your own check.</p>
+  <p>Free appeal routes: your insurer's grievance cell, IRDAI (Bima Bharosa, 155255) and the Insurance Ombudsman (cioins.co.in).</p>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

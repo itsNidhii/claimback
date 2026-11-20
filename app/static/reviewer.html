@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClaimBack - Reviewer console</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+<style>
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.two{grid-template-columns:1fr}}
+textarea.big{min-height:300px;font-size:14px}
+.q-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:#fff;cursor:pointer;margin:8px 0;width:100%;text-align:left;font:inherit}
+.q-item:hover{border-color:var(--blue);background:var(--blue-t)}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap top-in">
+  <a class="brand" href="/"><span class="logo"><i style="background:#4285F4"></i><i style="background:#EA4335"></i><i style="background:#FBBC04"></i><i style="background:#34A853"></i></span>ClaimBack <span class="badge" style="margin-left:6px">Reviewer</span></a>
+  <a class="link" href="/">Back to app</a>
+</div></header>
+<main class="wrap">
+  <section class="hero" style="padding-bottom:6px"><h1 style="font-size:28px">Reviewer console</h1>
+  <p>A trained reviewer checks every draft before the policyholder can use it. Check facts against the letter, remove anything not supported by the rule library, then approve or ask for changes.</p></section>
+
+  <section class="card" id="login">
+    <label class="field">Reviewer PIN<input type="text" id="pin" placeholder="Enter PIN" autocomplete="off"></label>
+    <div class="row"><button class="btn primary sm" id="enter">Open queue</button><span class="hint" id="lerr"></span></div>
+    <p class="hint">Demo PIN is set by the REVIEWER_PIN setting on the server (default: claimback).</p>
+  </section>
+
+  <section class="card" id="queue" hidden>
+    <div class="card-head"><h2>Waiting for review</h2><button class="btn sm" id="refresh">Refresh</button></div>
+    <div id="qlist"></div>
+  </section>
+
+  <section class="card" id="work" hidden>
+    <div class="card-head"><h2 id="wtitle">Review</h2><button class="btn sm" id="back">Back to queue</button></div>
+    <div id="winfo"></div>
+    <h3>Original letter (redacted text)</h3>
+    <pre class="doc" id="wletter" style="max-height:200px"></pre>
+    <h3>Email to insurer</h3>
+    <textarea class="big" id="wg"></textarea>
+    <h3>Ombudsman complaint</h3>
+    <textarea class="big" id="wo"></textarea>
+    <h3>Note for the policyholder (optional)</h3>
+    <input type="text" id="wnote" placeholder="e.g. Please add your hospital's name">
+    <div class="row">
+      <button class="btn primary sm" id="approve">Approve</button>
+      <button class="btn sm" id="changes">Ask for changes</button>
+      <span class="hint" id="werr"></span>
+    </div>
+  </section>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let PIN="", CUR=null;
+async function api(p,o={}){o.headers=Object.assign({"X-Reviewer-Pin":PIN},o.headers||{});const r=await fetch(p,o);let d=null;try{d=await r.json()}catch(e){}if(!r.ok)throw new Error((d&&d.detail)||("Error "+r.status));return d}
+async function loadQueue(){
+  const q=await api("/api/reviewer/queue");
+  $("#login").hidden=true;$("#queue").hidden=false;$("#work").hidden=true;
+  $("#qlist").innerHTML=q.length?q.map(c=>`<button class="q-item" data-id="${esc(c.id)}"><span><b>${esc(c.category)}</b> ${c.insurer?" - "+esc(c.insurer):""}<br><small class="hint">Case ${esc(c.id)} - confidence ${Math.round(c.confidence*100)}%${c.flag?" - flagged":""}</small></span><span class="pill ${c.flag?"red":"blue"}">${c.flag?"Flagged":"Open"}</span></button>`).join(""):`<p class="hint">Nothing waiting. Drafts appear here when a policyholder creates them.</p>`;
+  document.querySelectorAll(".q-item").forEach(b=>b.onclick=()=>openCase(b.dataset.id));
+}
+async function openCase(id){
+  const c=await api("/api/reviewer/"+id);CUR=c;
+  $("#queue").hidden=true;$("#work").hidden=false;$("#werr").textContent="";
+  $("#wtitle").textContent="Review case "+c.id;
+  const a=c.analysis;
+  $("#winfo").innerHTML=`<span class="pill blue">${esc(c.category_label)}</span> <span class="hint">confidence ${Math.round(a.confidence*100)}% - ${c.engine==="ai"?"AI":"basic mode"} - status: ${esc(c.status)}</span><p>${esc(a.plain_explanation)}</p>${a.needs_human_review?'<div class="flag">Flagged as uncertain. Check carefully.</div>':""}`;
+  $("#wletter").textContent=c.letter_text||"(photo/PDF: not stored)";
+  $("#wg").value=c.draft.grievance_body;$("#wo").value=c.draft.ombudsman_complaint;$("#wnote").value="";
+}
+async function decide(action){
+  try{await api("/api/reviewer/"+CUR.id,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action,grievance_body:$("#wg").value,ombudsman_complaint:$("#wo").value,note:$("#wnote").value})});await loadQueue()}
+  catch(e){$("#werr").textContent=e.message;$("#werr").className="hint warn"}
+}
+$("#enter").onclick=async()=>{PIN=$("#pin").value.trim();try{await loadQueue();const m=location.hash.match(/^#([a-f0-9]+)$/);if(m)openCase(m[1]).catch(()=>{})}catch(e){$("#lerr").textContent=e.message;$("#lerr").className="hint warn"}};
+$("#pin").addEventListener("keydown",e=>{if(e.key==="Enter")$("#enter").click()});
+$("#refresh").onclick=loadQueue;$("#back").onclick=loadQueue;
+$("#approve").onclick=()=>decide("approve");$("#changes").onclick=()=>decide("changes");
+</script>
+</body>
+</html>

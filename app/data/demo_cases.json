@@ -1,0 +1,66 @@
+[
+ {
+  "id": "waiting_period",
+  "expected": "waiting_period",
+  "source": "SYNTHETIC",
+  "text": "Example Health Insurance Co.\nClaim No: CL-1001\nDear Mr. A. Sharma,\nWe have reviewed your claim of Rs. 68,000 for cataract surgery (admission 14 Mar 2026). Your policy started on 20 Jul 2025. As per Clause 4.2, a waiting period of 24 months applies to cataract and other listed procedures. The treatment was taken within this period. Hence the claim is repudiated.\nRegards, Claims Team",
+  "title": "Cataract claim inside waiting period"
+ },
+ {
+  "id": "non_disclosure",
+  "expected": "non_disclosure_preexisting",
+  "source": "SYNTHETIC",
+  "text": "Example Health Insurance Co.\nClaim No: CL-1002\nDear Ms. R. Iyer,\nYour claim of Rs. 2,10,000 for cardiac treatment is declined. Medical records show you had Type 2 diabetes and hypertension since 2019. These were not declared in the proposal form dated 2 Jan 2025. As per Clause 6.1 (Disclosure of Information), non-disclosure of material facts makes the claim inadmissible.",
+  "title": "Cardiac claim: diabetes not declared"
+ },
+ {
+  "id": "document_deficiency",
+  "expected": "document_deficiency",
+  "source": "SYNTHETIC",
+  "text": "Example Health Insurance Co.\nClaim No: CL-1003\nDear Mr. K. Patel,\nWe have sent you three reminders (5 Apr, 19 Apr, 3 May 2026) asking for the final discharge summary and all investigation reports. We have not received them. The claim of Rs. 4,25,000 for chemotherapy is closed as no documents were provided. You may resubmit within 15 days.",
+  "title": "Cancer claim stuck in a document loop"
+ },
+ {
+  "id": "exclusion",
+  "expected": "exclusion",
+  "source": "SYNTHETIC",
+  "text": "Example Health Insurance Co.\nClaim No: CL-1004\nDear Ms. S. Nair,\nYour claim of Rs. 1,45,000 for bariatric surgery is not payable. Exclusion 5.7 states that treatment for obesity and weight control is not covered unless medically required and BMI is above 40. Your recorded BMI is 36.",
+  "title": "Bariatric surgery excluded"
+ },
+ {
+  "id": "policy_lapse",
+  "expected": "policy_lapse_cancellation",
+  "source": "SYNTHETIC",
+  "text": "Example Health Insurance Co.\nClaim No: CL-1005\nDear Mr. D. Rao,\nYour renewal premium due on 10 Feb 2026 was received on 22 Mar 2026. The grace period is 30 days. Your policy lapsed on 12 Mar 2026. You were admitted on 15 Mar 2026. No cover was in force on the date of admission, so the claim of Rs. 92,000 cannot be considered.",
+  "title": "Premium paid late, policy lapsed"
+ },
+ {
+  "id": "room_rent",
+  "expected": "room_rent_deduction",
+  "source": "SYNTHETIC",
+  "text": "Example Health Insurance Co.\nClaim No: CL-1006\nDear Ms. P. Das,\nYour claim of Rs. 3,00,000 is settled at Rs. 1,95,000. Your policy limits room rent to 1% of sum insured (Rs. 5,000 per day). You stayed in a room costing Rs. 8,000 per day. Under Clause 3.4 all related charges have been reduced proportionately.",
+  "title": "Room-rent proportionate deduction"
+ },
+ {
+  "id": "not_medically_necessary",
+  "expected": "not_medically_necessary",
+  "source": "SYNTHETIC",
+  "text": "Example Health Insurance Co.\nClaim No: CL-1007\nDear Mr. V. Menon,\nYour claim of Rs. 38,000 for hospitalisation on 2 Jun 2026 is declined. Records show admission was for investigations only (MRI and blood tests) with no active line of treatment. As per Clause 7.3, hospitalisation solely for diagnostics is not payable.",
+  "title": "Admission only for tests"
+ },
+ {
+  "id": "cover_cancelled",
+  "expected": "non_disclosure_preexisting",
+  "expect_cancelled": true,
+  "source": "SYNTHETIC (modelled on a public forum case)",
+  "text": "Example Health Insurance Co.\nDear Ms. T. Khan,\nYour claim of Rs. 54,000 for gastric treatment is rejected. During investigation we found a prior spinal condition (scoliosis) not disclosed in your proposal form. Under Clause 6.1 your policy is cancelled with effect from today and the premium is forfeited. The policy was 7 months old.",
+  "title": "Claim rejected and policy cancelled"
+ },
+ {
+  "id": "unclear",
+  "expected": "other",
+  "source": "SYNTHETIC (edge case: should be flagged for review)",
+  "text": "Dear customer, with reference to your claim, we regret to inform you that after due consideration we are unable to proceed. Kindly contact the branch for details.",
+  "title": "Vague letter with no reason"
+ }
+]
